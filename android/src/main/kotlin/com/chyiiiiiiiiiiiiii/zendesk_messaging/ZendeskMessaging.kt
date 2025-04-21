@@ -6,6 +6,7 @@ import zendesk.android.Zendesk
 import zendesk.android.events.ZendeskEvent
 import zendesk.android.events.ZendeskEventListener
 import zendesk.messaging.android.DefaultMessagingFactory
+import zendesk.messaging.android.push.PushNotifications
 
 class ZendeskMessaging(
     private val plugin: ZendeskMessagingPlugin,
@@ -119,4 +120,9 @@ class ZendeskMessaging(
     fun clearConversationFields() {
         Zendesk.instance.messaging.clearConversationFields()
     }
+
+    fun setNotificationToken(newToken: String) {
+        PushNotifications.updatePushNotificationToken(newToken)
+    }
+
 }

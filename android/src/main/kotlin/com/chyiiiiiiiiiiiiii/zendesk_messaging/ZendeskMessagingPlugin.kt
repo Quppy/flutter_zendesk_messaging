@@ -134,6 +134,25 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success(null)
             }
 
+            "setNotificationToken" -> {
+                if (!isInitialized) {
+                    println("$tag - Zendesk SDK needs to be initialized first")
+                    reportNotInitializedFlutterError(result)
+                    return
+                }
+                try {
+                    val token = call.argument<String>("token")
+                        ?: throw Exception("token is empty or null")
+                    
+                    zendeskMessaging.setNotificationToken(token)
+                    result.success(null)
+                } catch (err: Throwable) {
+                    println("$tag - ZendeskMessaging::setNotificationToken invalid arguments. {'token': '<token>'} expected !")
+                    println(err.message)
+                    result.error("set_notification_token_error", err.message, null)
+                }
+            }
+
             "setConversationFields" -> {
                 if (!isInitialized) {
                     println("$tag - Zendesk SDK needs to be initialized first")
