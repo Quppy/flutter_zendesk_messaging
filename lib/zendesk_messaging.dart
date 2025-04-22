@@ -80,6 +80,27 @@ class ZendeskMessaging {
     }
   }
 
+  /// Устанавливает токен уведомлений для Zendesk Messaging
+  ///
+  /// Данный метод передает токен push-уведомлений в SDK Zendesk, что позволяет
+  /// приложению получать push-уведомления о новых сообщениях от агентов поддержки.
+  ///
+  /// @param token Токен уведомлений, полученный от Firebase Cloud Messaging (для Android)
+  /// или Apple Push Notification Service (для iOS)
+  ///
+  /// Пример использования:
+  /// ```dart
+  /// final fcmToken = await FirebaseMessaging.instance.getToken();
+  /// await ZendeskMessaging.setNotificationToken(fcmToken!);
+  /// ```
+  static Future<void> setNotificationToken(String token) async {
+    try {
+      await _channel.invokeMethod('setNotificationToken', {'token': token});
+    } catch (e) {
+      debugPrint('ZendeskMessaging - setNotificationToken - Error: $e}');
+    }
+  }
+
   /// Remove all the tags on the current support ticket
   ///
   static Future<void> clearConversationTags() async {
