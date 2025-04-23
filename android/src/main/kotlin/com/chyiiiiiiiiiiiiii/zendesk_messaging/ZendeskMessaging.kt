@@ -39,21 +39,23 @@ class ZendeskMessaging(
 
     fun initialize(channelKey: String, result: MethodChannel.Result) {
         println("$TAG - Channel Key - $channelKey")
-        Zendesk.initialize(
-            plugin.activity!!,
-            channelKey,
-            successCallback = { value ->
-                plugin.isInitialized = true
-                println("$TAG - initialize success - $value")
-                result.success(null)
-            },
-            failureCallback = { error ->
-                plugin.isInitialized = false
-                println("$TAG - initialize failure - $error")
-                result.error("initialize_error", error.message, null)
-            },
-            messagingFactory = DefaultMessagingFactory()
-        )
+        if (plugin.activity != null) {
+            Zendesk.initialize(
+                plugin.activity!!,
+                channelKey,
+                successCallback = { value ->
+                    plugin.isInitialized = true
+                    println("$TAG - initialize success - $value")
+                    result.success(null)
+                },
+                failureCallback = { error ->
+                    plugin.isInitialized = false
+                    println("$TAG - initialize failure - $error")
+                    result.error("initialize_error", error.message, null)
+                },
+                messagingFactory = DefaultMessagingFactory()
+            )
+        }
     }
 
     fun invalidate() {
@@ -64,8 +66,10 @@ class ZendeskMessaging(
     }
 
     fun show() {
-        Zendesk.instance.messaging.showMessaging(plugin.activity!!, Intent.FLAG_ACTIVITY_NEW_TASK)
-        println("$TAG - show")
+        if (plugin.activity != null) {
+            Zendesk.instance.messaging.showMessaging(plugin.activity!!, Intent.FLAG_ACTIVITY_NEW_TASK)
+            println("$TAG - show")
+        }
     }
 
     fun getUnreadMessageCount(): Int =
