@@ -77,6 +77,15 @@ public class SwiftZendeskMessagingPlugin: NSObject, FlutterPlugin {
             result(handleInitializedStatus())
         case "isLoggedIn":
             result(handleLoggedInStatus())
+        case "setNotificationToken":
+            if (!isInitialized) {
+                print("\(TAG) - Messaging needs to be initialized first.\n")
+                reportNotInitializedFlutterError(result: result)
+                return
+            }
+            let token: String = arguments?["token"] as! String
+            zendeskMessaging?.setNotificationToken(token:token)
+            result(nil)
         case "setConversationTags":
             if (!isInitialized) {
                 print("\(TAG) - Messaging needs to be initialized first.\n")

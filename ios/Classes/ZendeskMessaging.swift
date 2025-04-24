@@ -84,6 +84,10 @@ public class ZendeskMessaging: NSObject {
         print("\(self.TAG) - show")
     }
 
+    func setNotificationToken(token: String) {
+        PushNotifications.updatePushNotificationToken(token)
+    }
+
     func setConversationTags(tags: [String]) {
         Zendesk.instance?.messaging?.setConversationTags(tags)
     }
