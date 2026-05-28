@@ -1,3 +1,25 @@
+## Unreleased — Flexii fork (based on 3.2.2)
+
+Maintained at github.com/yiichenflexii/flutter_zendesk_messaging, branch
+`fix/ios-apns-token-hex-parsing`. Pinned by the Flexii worker app until these
+fixes are upstreamed.
+
+### Bug Fixes
+
+- **iOS**: Parse the APNs device token as hex before forwarding to
+  `PushNotifications.updatePushNotificationToken`. The previous code used
+  `token.data(using: .utf8)`, which produced the UTF-8 bytes of the hex
+  string instead of the 32-byte device token, so Zendesk registered a
+  malformed token and never delivered iOS push.
+- **Android**: Use the application context (stored in `onAttachedToEngine`)
+  for `handleNotification` instead of the Activity. The Activity is null in a
+  background isolate / terminated state, so the previous code bailed with
+  `no_context` and background pushes never displayed.
+  `PushNotifications.displayNotification` only needs a `Context`.
+- **Android**: Guard `initialize` against a null Activity to return a clean
+  error instead of a `NullPointerException`. Push display does not require
+  `initialize`; it uses `shouldBeDisplayed` / `handleNotification`.
+
 ## 3.2.2
 
 ### Bug Fixes
