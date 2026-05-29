@@ -1,8 +1,4 @@
-## Unreleased — Flexii fork (based on 3.2.2)
-
-Maintained at github.com/yiichenflexii/flutter_zendesk_messaging, branch
-`fix/ios-apns-token-hex-parsing`. Pinned by the Flexii worker app until these
-fixes are upstreamed.
+## Unreleased
 
 ### Bug Fixes
 
