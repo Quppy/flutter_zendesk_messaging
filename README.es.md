@@ -206,11 +206,18 @@ await ZendeskMessaging.clearConversationFields();
 ## Notificaciones Push
 
 ```dart
+import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:zendesk_messaging/zendesk_messaging.dart';
 
-// Registrar token de push
-final token = await FirebaseMessaging.instance.getToken();
+// Registra el token de push correcto según la plataforma
+// - Android: token FCM mediante getToken()
+// - iOS: token de dispositivo APNs mediante getAPNSToken()
+//   (el SDK de iOS de Zendesk requiere el token APNs, NO el token FCM)
+final messaging = FirebaseMessaging.instance;
+final token = Platform.isIOS
+    ? await messaging.getAPNSToken()
+    : await messaging.getToken();
 if (token != null) {
   await ZendeskMessaging.updatePushNotificationToken(token);
 }
@@ -223,6 +230,8 @@ FirebaseMessaging.onMessage.listen((message) async {
   }
 });
 ```
+
+> **Importante (iOS):** El SDK de iOS de Zendesk usa APNs directamente para las notificaciones push, no FCM. Debes pasar el token de dispositivo APNs mediante `getAPNSToken()`, no el token de registro FCM de `getToken()`. Usar el tipo de token incorrecto hará que las notificaciones fallen de forma silenciosa.
 
 ## Referencia de la API
 

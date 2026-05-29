@@ -16,6 +16,15 @@
   error instead of a `NullPointerException`. Push display does not require
   `initialize`; it uses `shouldBeDisplayed` / `handleNotification`.
 
+### Documentation
+
+- Correct the push notification token usage in all README translations and the
+  `updatePushNotificationToken` API doc. On iOS, pass the APNs device token
+  from `getAPNSToken()`, not the FCM token from `getToken()` — using the FCM
+  token on iOS silently fails to deliver push. Token retrieval is now split per
+  platform, and `onTokenRefresh` is guarded to Android (iOS APNs tokens are
+  re-fetched on launch).
+
 ## 3.2.2
 
 ### Bug Fixes

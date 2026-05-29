@@ -166,11 +166,18 @@ await ZendeskMessaging.listenUnreadMessages();
 ## 푸시 알림
 
 ```dart
+import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:zendesk_messaging/zendesk_messaging.dart';
 
-// 푸시 토큰 등록
-final token = await FirebaseMessaging.instance.getToken();
+// 플랫폼에 맞는 올바른 토큰을 등록합니다
+// - Android: getToken()으로 가져온 FCM 토큰
+// - iOS: getAPNSToken()으로 가져온 APNs 기기 토큰
+//   (Zendesk iOS SDK는 FCM이 아닌 APNs 토큰이 필요합니다)
+final messaging = FirebaseMessaging.instance;
+final token = Platform.isIOS
+    ? await messaging.getAPNSToken()
+    : await messaging.getToken();
 if (token != null) {
   await ZendeskMessaging.updatePushNotificationToken(token);
 }
@@ -183,6 +190,8 @@ FirebaseMessaging.onMessage.listen((message) async {
   }
 });
 ```
+
+> **중요 (iOS):** Zendesk iOS SDK는 푸시 알림에 FCM이 아닌 APNs를 직접 사용합니다. `getToken()`의 FCM 등록 토큰이 아니라 `getAPNSToken()`의 APNs 기기 토큰을 전달해야 합니다. 잘못된 토큰 유형을 사용하면 알림이 표시되지 않고 조용히 실패합니다.
 
 ## API 참조
 
