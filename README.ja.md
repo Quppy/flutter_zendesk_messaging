@@ -166,11 +166,18 @@ await ZendeskMessaging.listenUnreadMessages();
 ## プッシュ通知
 
 ```dart
+import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:zendesk_messaging/zendesk_messaging.dart';
 
-// プッシュトークンを登録します
-final token = await FirebaseMessaging.instance.getToken();
+// プラットフォームに応じて正しいトークンを登録します
+// - Android: getToken() で取得する FCM トークン
+// - iOS: getAPNSToken() で取得する APNs デバイストークン
+//   （Zendesk iOS SDK は FCM ではなく APNs トークンが必要です）
+final messaging = FirebaseMessaging.instance;
+final token = Platform.isIOS
+    ? await messaging.getAPNSToken()
+    : await messaging.getToken();
 if (token != null) {
   await ZendeskMessaging.updatePushNotificationToken(token);
 }
@@ -183,6 +190,8 @@ FirebaseMessaging.onMessage.listen((message) async {
   }
 });
 ```
+
+> **重要 (iOS):** Zendesk iOS SDK はプッシュ通知に FCM ではなく APNs を直接使用します。`getToken()` の FCM 登録トークンではなく、`getAPNSToken()` の APNs デバイストークンを渡す必要があります。誤ったトークンを渡すと、通知は何も表示されずに失敗します。
 
 ## APIリファレンス
 

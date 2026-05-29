@@ -338,6 +338,7 @@ final color = switch (status) {
 ### 使用方法
 
 ```dart
+import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:zendesk_messaging/zendesk_messaging.dart';
 
@@ -347,16 +348,22 @@ Future<void> setupPushNotifications() async {
   // 请求权限
   await messaging.requestPermission();
 
-  // 获取并注册 token
-  final token = await messaging.getToken();
-  if (token != null) {
-    await ZendeskMessaging.updatePushNotificationToken(token);
-  }
+  // 按平台获取并注册正确的 token
+  // - Android：通过 getToken() 获取 FCM token
+  // - iOS：通过 getAPNSToken() 获取 APNs device token
+  //   （Zendesk iOS SDK 需要 APNs token，而非 FCM token）
+  await _registerPushToken(messaging);
 
   // 监听 token 刷新
-  messaging.onTokenRefresh.listen((token) {
-    ZendeskMessaging.updatePushNotificationToken(token);
-  });
+  // - Android：onTokenRefresh 会返回新的 FCM token
+  // - iOS：APNs token 很少改变（设备还原、系统更新）；
+  //   每次启动 app 时通过 getAPNSToken() 重新获取（上方已处理）。
+  //   onTokenRefresh 返回的是 FCM token，此处不适用。
+  if (Platform.isAndroid) {
+    messaging.onTokenRefresh.listen((token) {
+      ZendeskMessaging.updatePushNotificationToken(token);
+    });
+  }
 
   // 处理前台通知
   FirebaseMessaging.onMessage.listen((message) async {
@@ -377,7 +384,21 @@ Future<void> setupPushNotifications() async {
     await ZendeskMessaging.handleNotificationTap(message.data);
   });
 }
+
+Future<void> _registerPushToken(FirebaseMessaging messaging) async {
+  String? token;
+  if (Platform.isAndroid) {
+    token = await messaging.getToken();
+  } else if (Platform.isIOS) {
+    token = await messaging.getAPNSToken();
+  }
+  if (token != null) {
+    await ZendeskMessaging.updatePushNotificationToken(token);
+  }
+}
 ```
+
+> **重要（iOS）：** Zendesk iOS SDK 直接使用 APNs 进行推送，而非 FCM。你必须通过 `getAPNSToken()` 传入 APNs device token，而不是 `getToken()` 返回的 FCM registration token。传入错误的 token 类型会导致推送静默失败。APNs token 很少改变，但每次启动 app 时调用 `getAPNSToken()` 可确保 token 保持最新。
 
 ### 推送通知 API
 
