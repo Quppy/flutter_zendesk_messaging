@@ -312,8 +312,21 @@ class ZendeskMessaging(
 
     fun initialize(channelKey: String, result: MethodChannel.Result) {
         println("$TAG - Channel Key - $channelKey")
+        // Zendesk.initialize requires an Activity. Guard against a null
+        // Activity (background isolate / terminated state) so callers get a
+        // clean error instead of a NullPointerException. Push display does
+        // not need initialize — use shouldBeDisplayed/handleNotification.
+        val currentActivity = plugin.activity ?: run {
+            println("$TAG - initialize skipped: no Activity in this context")
+            result.error(
+                "no_activity",
+                "Zendesk.initialize requires an Activity and cannot run without one",
+                null,
+            )
+            return
+        }
         Zendesk.initialize(
-            plugin.activity!!,
+            currentActivity,
             channelKey,
             successCallback = { value ->
                 plugin.isInitialized = true

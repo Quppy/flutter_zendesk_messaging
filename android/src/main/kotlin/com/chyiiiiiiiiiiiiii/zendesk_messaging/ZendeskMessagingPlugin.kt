@@ -1,6 +1,7 @@
 package com.chyiiiiiiiiiiiiii.zendesk_messaging
 
 import android.app.Activity
+import android.content.Context
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -16,12 +17,14 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var zendeskMessaging: ZendeskMessaging
 
     var activity: Activity? = null
+    var applicationContext: Context? = null
     var isInitialized: Boolean = false
     var isLoggedIn: Boolean = false
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "zendesk_messaging")
         channel.setMethodCallHandler(this)
+        applicationContext = flutterPluginBinding.applicationContext
         zendeskMessaging = ZendeskMessaging(this, channel)
     }
 
@@ -287,8 +290,12 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                         result.error("invalid_argument", "messageData is required", null)
                         return
                     }
-                    val context = activity ?: run {
-                        result.error("no_context", "Activity context is null", null)
+                    // Prefer the application context so notifications can be
+                    // displayed from a background isolate / terminated state
+                    // where no Activity is attached. PushNotifications
+                    // .displayNotification only needs a Context, not an Activity.
+                    val context = applicationContext ?: activity ?: run {
+                        result.error("no_context", "No context available", null)
                         return
                     }
                     // Convert Map<String, Any> to Map<String, String>
