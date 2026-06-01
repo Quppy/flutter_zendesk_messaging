@@ -210,6 +210,12 @@ class ZendeskMessaging {
   ///
   /// Requires multi-conversations to be enabled in Zendesk Admin Center.
   ///
+  /// Call this once per navigation. Invoking it (or another messaging
+  /// navigation method) again in quick succession can cause the underlying SDK
+  /// to open the default conversation instead of [conversationId]. If a single
+  /// user action might trigger multiple calls — e.g. a notification tap handled
+  /// by more than one listener — de-duplicate before calling.
+  ///
   /// Throws [ArgumentError] if conversationId is empty.
   /// Throws [PlatformException] if the conversation cannot be shown.
   static Future<void> showConversation(String conversationId) async {
