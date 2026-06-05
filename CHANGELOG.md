@@ -24,6 +24,11 @@
   token on iOS silently fails to deliver push. Token retrieval is now split per
   platform, and `onTokenRefresh` is guarded to Android (iOS APNs tokens are
   re-fetched on launch).
+- Document that `showConversation` should be called once per navigation. Rapid
+  duplicate calls can make the underlying SDK open the default conversation
+  instead of the requested one, so callers that may fire more than once for a
+  single user action (e.g. a notification tap reaching multiple handlers) should
+  de-duplicate.
 
 ## 3.2.2
 
