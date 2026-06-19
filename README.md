@@ -69,6 +69,10 @@ Then run:
 cd ios && pod install
 ```
 
+#### Swift Package Manager
+
+This plugin also supports [Swift Package Manager](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers). If your app has migrated to SPM, no extra setup is required — just make sure your app's iOS deployment target is at least 14.0. CocoaPods remains fully supported, so existing apps need no changes.
+
 ## Quick Start
 
 ### Getting Channel Keys

@@ -1,3 +1,4 @@
+import Flutter
 import UIKit
 import ZendeskSDKMessaging
 import ZendeskSDK
@@ -9,11 +10,11 @@ public class ZendeskMessaging: NSObject {
 
     let TAG = "[ZendeskMessaging]"
 
-    private weak var zendeskPlugin: SwiftZendeskMessagingPlugin?
+    private weak var zendeskPlugin: ZendeskMessagingPlugin?
     private let channel: FlutterMethodChannel
     private var lastConnectionStatus: String = "unknown"
 
-    init(flutterPlugin: SwiftZendeskMessagingPlugin, channel: FlutterMethodChannel) {
+    init(flutterPlugin: ZendeskMessagingPlugin, channel: FlutterMethodChannel) {
         self.zendeskPlugin = flutterPlugin
         self.channel = channel
     }

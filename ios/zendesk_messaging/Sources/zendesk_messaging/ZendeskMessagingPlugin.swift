@@ -1,8 +1,9 @@
 import Flutter
 import UIKit
 
-public class SwiftZendeskMessagingPlugin: NSObject, FlutterPlugin {
-    let TAG = "[SwiftZendeskMessagingPlugin]"
+@objc(ZendeskMessagingPlugin)
+public class ZendeskMessagingPlugin: NSObject, FlutterPlugin {
+    let TAG = "[ZendeskMessagingPlugin]"
     private var channel: FlutterMethodChannel
     private var zendeskMessaging: ZendeskMessaging?
     var isInitialized = false
@@ -16,7 +17,7 @@ public class SwiftZendeskMessagingPlugin: NSObject, FlutterPlugin {
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "zendesk_messaging", binaryMessenger: registrar.messenger())
-        let instance = SwiftZendeskMessagingPlugin(channel: channel)
+        let instance = ZendeskMessagingPlugin(channel: channel)
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
     }

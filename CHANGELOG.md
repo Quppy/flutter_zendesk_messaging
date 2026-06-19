@@ -1,3 +1,13 @@
+## 3.4.0
+
+### New Features
+
+- **iOS**: Add Swift Package Manager (SPM) support (#100). The plugin now ships
+  a `Package.swift` alongside the existing podspec, so apps that have migrated
+  to SPM can depend on it. CocoaPods remains fully supported — both dependency
+  managers resolve the same `ZendeskSDKMessaging` 2.36.0 native SDK, so existing
+  CocoaPods users are unaffected and no app changes are required.
+
 ## 3.3.0
 
 ### New Features
