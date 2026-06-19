@@ -20,6 +20,7 @@ Zendesk 메시징 SDK를 모바일 애플리케이션에 통합하기 위한 Flu
 - 읽지 않은 메시지 수 추적
 - 대화 태그 및 사용자 정의 필드
 - 연결 상태 모니터링
+- 메시징 UI 로케일 재정의
 - 푸시 알림 지원 (FCM/APNs)
 
 ## 요구 사항
@@ -163,6 +164,35 @@ ZendeskMessaging.eventStream.listen((event) {
 await ZendeskMessaging.listenUnreadMessages();
 ```
 
+## 로케일
+
+기기의 시스템 로케일을 재정의하여 Zendesk 메시징 UI를 앱 언어에 맞춥니다. Zendesk SDK는 [33개 언어](https://developer.zendesk.com/documentation/zendesk-web-widget-sdks/sdks/android/localization/)를 지원합니다.
+
+```dart
+// 권장: 초기화 전에 로케일을 설정합니다
+await ZendeskMessaging.setLocale('es');
+await ZendeskMessaging.initialize(
+  androidChannelKey: '<YOUR_ANDROID_CHANNEL_KEY>',
+  iosChannelKey: '<YOUR_IOS_CHANNEL_KEY>',
+);
+
+// Android: show() 전에 런타임에 전환할 수도 있습니다
+await ZendeskMessaging.setLocale('ja');
+await ZendeskMessaging.show();
+
+// iOS 런타임 전환: 재초기화가 필요합니다
+await ZendeskMessaging.setLocale('fr');
+await ZendeskMessaging.invalidate();
+await ZendeskMessaging.initialize(
+  androidChannelKey: '<YOUR_ANDROID_CHANNEL_KEY>',
+  iosChannelKey: '<YOUR_IOS_CHANNEL_KEY>',
+);
+```
+
+**플랫폼별 동작:**
+- **Android**: `Locale.setDefault()`를 설정하고 애플리케이션/액티비티 리소스 구성을 업데이트합니다. SDK는 Android 리소스 시스템에서 UI 문자열을 해석하므로, SDK가 메시징 액티비티를 실행할 때 적용됩니다. 런타임에 전환할 수 있습니다.
+- **iOS**: SDK가 로드하는 지역화 번들을 제어하는 `AppleLanguages` 사용자 기본값을 설정합니다. `initialize()` **전에** 설정해야 합니다. 초기화 후에 변경하려면 `invalidate()`를 호출한 다음 `initialize()`를 다시 호출하세요.
+
 ## 푸시 알림
 
 ```dart
@@ -203,6 +233,7 @@ FirebaseMessaging.onMessage.listen((message) async {
 | `show()` | `Future<void>` | 메시징 UI를 표시합니다 |
 | `loginUser(jwt)` | `Future<ZendeskLoginResponse>` | JWT로 로그인합니다 |
 | `logoutUser()` | `Future<void>` | 사용자를 로그아웃합니다 |
+| `setLocale(locale)` | `Future<void>` | 메시징 UI 로케일을 설정합니다 |
 | ... | ... | ... |
 
 ## 라이선스

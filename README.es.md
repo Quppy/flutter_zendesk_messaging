@@ -20,6 +20,7 @@ Un plugin de Flutter para integrar el SDK de Zendesk Messaging en tus aplicacion
 - Seguimiento del recuento de mensajes no leídos
 - Etiquetas de conversación y campos personalizados
 - Monitoreo del estado de la conexión
+- Anulación del idioma de la interfaz de mensajería
 - Soporte para notificaciones push (FCM/APNs)
 
 ## Requisitos
@@ -203,6 +204,35 @@ await ZendeskMessaging.setConversationFields({
 await ZendeskMessaging.clearConversationFields();
 ```
 
+## Idioma
+
+Anula el idioma del sistema del dispositivo para que la interfaz de Zendesk Messaging coincida con el idioma de tu aplicación. El SDK de Zendesk incluye [33 idiomas](https://developer.zendesk.com/documentation/zendesk-web-widget-sdks/sdks/android/localization/).
+
+```dart
+// Mejor opción: establece el idioma antes de inicializar
+await ZendeskMessaging.setLocale('es');
+await ZendeskMessaging.initialize(
+  androidChannelKey: '<YOUR_ANDROID_CHANNEL_KEY>',
+  iosChannelKey: '<YOUR_IOS_CHANNEL_KEY>',
+);
+
+// Android: también puedes cambiarlo en tiempo de ejecución antes de show()
+await ZendeskMessaging.setLocale('ja');
+await ZendeskMessaging.show();
+
+// iOS, cambio en tiempo de ejecución: requiere reinicializar
+await ZendeskMessaging.setLocale('fr');
+await ZendeskMessaging.invalidate();
+await ZendeskMessaging.initialize(
+  androidChannelKey: '<YOUR_ANDROID_CHANNEL_KEY>',
+  iosChannelKey: '<YOUR_IOS_CHANNEL_KEY>',
+);
+```
+
+**Detalles por plataforma:**
+- **Android**: Establece `Locale.setDefault()` y actualiza la configuración de recursos de la aplicación/actividad. El SDK resuelve los textos de la interfaz desde el sistema de recursos de Android, por lo que surte efecto al lanzar la actividad de mensajería. Se puede cambiar en tiempo de ejecución.
+- **iOS**: Establece la preferencia de usuario `AppleLanguages`, que controla qué paquete de localización carga el SDK. Debe establecerse **antes** de `initialize()`. Para cambiarlo después, llama a `invalidate()` y luego a `initialize()` de nuevo.
+
 ## Notificaciones Push
 
 ```dart
@@ -243,6 +273,7 @@ FirebaseMessaging.onMessage.listen((message) async {
 | `show()` | `Future<void>` | Muestra la interfaz de mensajería |
 | `loginUser(jwt)` | `Future<ZendeskLoginResponse>` | Inicia sesión con JWT |
 | `logoutUser()` | `Future<void>` | Cierra la sesión del usuario |
+| `setLocale(locale)` | `Future<void>` | Establece el idioma de la interfaz de mensajería |
 | ... | ... | ... |
 
 ## Licencia

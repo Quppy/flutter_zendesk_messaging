@@ -20,6 +20,7 @@ Um plugin Flutter para integrar o SDK de Mensagens da Zendesk em seus aplicativo
 - Rastreamento da contagem de mensagens não lidas
 - Tags de conversa e campos personalizados
 - Monitoramento do status da conexão
+- Substituição do idioma da interface de mensagens
 - Suporte a notificações push (FCM/APNs)
 
 ## Requisitos
@@ -203,6 +204,35 @@ await ZendeskMessaging.setConversationFields({
 await ZendeskMessaging.clearConversationFields();
 ```
 
+## Idioma
+
+Substitui o idioma do sistema do dispositivo para que a interface do Zendesk Messaging corresponda ao idioma do seu aplicativo. O SDK do Zendesk inclui [33 idiomas](https://developer.zendesk.com/documentation/zendesk-web-widget-sdks/sdks/android/localization/).
+
+```dart
+// Melhor opção: defina o idioma antes de inicializar
+await ZendeskMessaging.setLocale('es');
+await ZendeskMessaging.initialize(
+  androidChannelKey: '<YOUR_ANDROID_CHANNEL_KEY>',
+  iosChannelKey: '<YOUR_IOS_CHANNEL_KEY>',
+);
+
+// Android: também é possível trocar em tempo de execução antes de show()
+await ZendeskMessaging.setLocale('ja');
+await ZendeskMessaging.show();
+
+// iOS, troca em tempo de execução: requer reinicialização
+await ZendeskMessaging.setLocale('fr');
+await ZendeskMessaging.invalidate();
+await ZendeskMessaging.initialize(
+  androidChannelKey: '<YOUR_ANDROID_CHANNEL_KEY>',
+  iosChannelKey: '<YOUR_IOS_CHANNEL_KEY>',
+);
+```
+
+**Detalhes por plataforma:**
+- **Android**: Define `Locale.setDefault()` e atualiza a configuração de recursos do aplicativo/atividade. O SDK resolve os textos da interface pelo sistema de recursos do Android, portanto surte efeito quando o SDK abre a atividade de mensagens. Pode ser alterado em tempo de execução.
+- **iOS**: Define a preferência de usuário `AppleLanguages`, que controla qual pacote de localização o SDK carrega. Deve ser definido **antes** de `initialize()`. Para alterar depois, chame `invalidate()` e então `initialize()` novamente.
+
 ## Notificações Push
 
 ```dart
@@ -243,6 +273,7 @@ FirebaseMessaging.onMessage.listen((message) async {
 | `show()` | `Future<void>` | Exibe a interface de mensagens |
 | `loginUser(jwt)` | `Future<ZendeskLoginResponse>` | Faz login com JWT |
 | `logoutUser()` | `Future<void>` | Faz logout do usuário |
+| `setLocale(locale)` | `Future<void>` | Define o idioma da interface de mensagens |
 | ... | ... | ... |
 
 ## Licença
