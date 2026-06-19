@@ -1,3 +1,22 @@
+## 3.3.0
+
+### New Features
+
+- **Locale**: Add `setLocale(locale)` to override the Zendesk messaging UI
+  language at runtime (#97).
+  - Android: Sets `Locale.setDefault()` and updates the application/activity
+    resource configuration. Can switch at runtime before launching the UI.
+  - iOS: Sets the `AppleLanguages` user default for SDK localization. Set it
+    **before** `initialize()`; to change after, call `invalidate()` then
+    `initialize()` again.
+
+### Build
+
+- **Android**: Migrate to Flutter's built-in Kotlin so the plugin builds with
+  Android Gradle Plugin (AGP) 9+ (#104). The Kotlin Gradle Plugin is now applied
+  only on AGP < 9, and the deprecated `kotlinOptions` block is replaced by the
+  `kotlin.compilerOptions` DSL. Apps on AGP < 9 are unaffected.
+
 ## 3.2.3
 
 ### Bug Fixes
