@@ -10,24 +10,18 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
+        maven { url 'https://zendesk.jfrog.io/artifactory/repo' }
     }
 }
 
 android {
-    if (project.android.hasProperty('namespace')) {
-        namespace 'com.chyiiiiiiiiiiiiii.zendesk_messaging'
-    }
-    
-    compileSdkVersion 34
+    namespace 'com.chyiiiiiiiiiiiiii.zendesk_messaging'
+
+    compileSdk 35
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     sourceSets {
@@ -35,10 +29,16 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdk 21
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 
 dependencies {
-    implementation "zendesk.messaging:messaging-android:2.26.0"
+    implementation "zendesk.messaging:messaging-android:2.36.1"
 }
